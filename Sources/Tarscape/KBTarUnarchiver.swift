@@ -40,6 +40,9 @@ public final class KBTarUnarchiver {
         /// in a URL,setting this option will *slow* extraction. Only use this option when you know the Tar
         /// archive contains only simple file paths.
         public static let mostSubpathsCanBeUnescaped = Options(rawValue: 1 << 1)
+
+        /// If set, the unarchiver will not attempt to remove and recreate the folder to be extracted to.
+        public static let skipDirectoryCreation = Options(rawValue: 1 << 2)
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -99,12 +102,14 @@ public final class KBTarUnarchiver {
     public func extract(to dirURL: URL, progressBody: ((Double, Int64) -> Void)? = nil) throws {
         let fm = FileManager.default
         
-        // Remove any existing file at the target path.
-        if fm.fileExists(atPath: dirURL.path) {
-            try fm.removeItem(at: dirURL)
+        if !options.contains(.skipDirectoryCreation) {
+            // Remove any existing file at the target path.
+            if fm.fileExists(atPath: dirURL.path) {
+                try fm.removeItem(at: dirURL)
+            }
+            // Create the folder.
+            try fm.createDirectory(at: dirURL, withIntermediateDirectories: true, attributes: nil)
         }
-        // Create the folder.
-        try fm.createDirectory(at: dirURL, withIntermediateDirectories: true, attributes: nil)
         let dirAbsPath = dirURL.absoluteString
         do {
             try openFileHandleAndEnumerateTar(progressBody: progressBody) { subpath, location, size, tarType, extendedHeader, stop in
@@ -129,7 +134,7 @@ public final class KBTarUnarchiver {
                     
                 case .directory:
                     let directoryURL = fileURL(forDirectoryURL: dirURL, directoryAbsoluteString: dirAbsPath, subpath: subpath)
-                    try fm.createDirectory(at: directoryURL, withIntermediateDirectories: true, attributes: nil)
+                    try? fm.createDirectory(at: directoryURL, withIntermediateDirectories: true, attributes: nil)
                     if options.contains(.restoreFileAttributes) {
                         let attrs = attributes(at: location)
                         if attrs.isEmpty == false {
