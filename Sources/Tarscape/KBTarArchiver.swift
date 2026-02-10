@@ -11,7 +11,7 @@
 
 import Foundation
 
-public class KBTarArchiver {
+public final class KBTarArchiver {
     
     private let directoryURL: URL
     private let options: Options
@@ -19,7 +19,7 @@ public class KBTarArchiver {
     
     // MARK: - Options
     
-    public struct Options: OptionSet {
+    public struct Options: OptionSet, Sendable {
         public let rawValue: Int
 
         /// If set, archiving checks for aliases and stores them as symbolic links in the archive. (The Tar format

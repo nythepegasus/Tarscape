@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -14,5 +14,5 @@ let package = Package(
         .target(name: "Tarscape"),
         .testTarget(name: "TarscapeTests", dependencies: ["Tarscape"]),
     ],
-    swiftLanguageModes: [.v6]
+    swiftLanguageVersions: [.v5]
 )

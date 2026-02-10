@@ -11,7 +11,7 @@
 
 import Foundation
 
-public class KBTarUnarchiver {
+public final class KBTarUnarchiver {
     
     private let tarURL: URL
     private let options: Options
@@ -20,7 +20,7 @@ public class KBTarUnarchiver {
     
     // MARK: - Options
     
-    public struct Options: OptionSet {
+    public struct Options: OptionSet, Sendable {
         public let rawValue: Int
 
         /// If set, file attributes such as modification dates and permissions will be read from the archive
